@@ -16,6 +16,15 @@ license = "Unlicense OR MIT"
 name = "wincolor"
 bench = false
 
+[dependencies]
+# When built as part of libstd
+std = { version = "1.0", package = "rustc-std-workspace-std", optional = true }
+core = { version = "1.0", package = "rustc-std-workspace-core", optional = true }
+
 [dependencies.winapi]
-version = "0.3"
+git = "https://github.com/euclio/winapi-rs"
+branch = "std-workspace"
 features = ["consoleapi", "minwindef", "processenv", "winbase", "wincon"]
+
+[features]
+rustc-dep-of-std = ["std", "core", "winapi/rustc-dep-of-std"]

@@ -248,7 +248,7 @@ impl IoStandardStream {
         }
     }
 
-    fn lock(&self) -> IoStandardStreamLock {
+    fn lock(&self) -> IoStandardStreamLock<'_> {
         match *self {
             IoStandardStream::Stdout(ref s) => {
                 IoStandardStreamLock::StdoutLock(s.lock())
@@ -393,14 +393,14 @@ impl StandardStream {
     ///
     /// This method is **not reentrant**. It may panic if `lock` is called
     /// while a `StandardStreamLock` is still alive.
-    pub fn lock(&self) -> StandardStreamLock {
+    pub fn lock(&self) -> StandardStreamLock<'_> {
         StandardStreamLock::from_stream(self)
     }
 }
 
 impl<'a> StandardStreamLock<'a> {
     #[cfg(not(windows))]
-    fn from_stream(stream: &StandardStream) -> StandardStreamLock {
+    fn from_stream(stream: &StandardStream) -> StandardStreamLock<'_> {
         let locked = match *stream.wtr.get_ref() {
             WriterInner::NoColor(ref w) => {
                 WriterInnerLock::NoColor(NoColor(w.0.lock()))
@@ -413,7 +413,7 @@ impl<'a> StandardStreamLock<'a> {
     }
 
     #[cfg(windows)]
-    fn from_stream(stream: &StandardStream) -> StandardStreamLock {
+    fn from_stream(stream: &StandardStream) -> StandardStreamLock<'_> {
         let locked = match *stream.wtr.get_ref() {
             WriterInner::NoColor(ref w) => {
                 WriterInnerLock::NoColor(NoColor(w.0.lock()))
@@ -1348,7 +1348,7 @@ impl WindowsBuffer {
     fn print(
         &self,
         console: &mut wincolor::Console,
-        stream: &mut LossyStandardStream<IoStandardStreamLock>,
+        stream: &mut LossyStandardStream<IoStandardStreamLock<'_>>,
     ) -> io::Result<()> {
         let mut last = 0;
         for &(pos, ref spec) in &self.colors {
@@ -1697,7 +1697,7 @@ impl error::Error for ParseColorError {
 }
 
 impl fmt::Display for ParseColorError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use self::ParseColorErrorKind::*;
         match self.kind {
             InvalidName => {

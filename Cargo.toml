@@ -17,5 +17,13 @@ exclude = ["/.travis.yml", "/appveyor.yml", "/ci/**"]
 name = "termcolor"
 bench = false
 
+[dependencies]
+# When built as part of libstd
+std = { version = "1.0", package = "rustc-std-workspace-std", optional = true }
+core = { version = "1.0", package = "rustc-std-workspace-core", optional = true }
+
 [target.'cfg(windows)'.dependencies]
 wincolor = { version = "1", path = "wincolor" }
+
+[features]
+rustc-dep-of-std = ["std", "core", "wincolor/rustc-dep-of-std"]
