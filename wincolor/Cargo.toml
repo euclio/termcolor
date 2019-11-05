@@ -16,9 +16,6 @@ license = "Unlicense OR MIT"
 name = "wincolor"
 bench = false
 
-[dependencies]
-winapi-util = "0.1.1"
-
 [dependencies.winapi]
 version = "0.3"
-features = ["minwindef", "wincon"]
+features = ["consoleapi", "minwindef", "processenv", "winbase", "wincon"]
